@@ -1,0 +1,6 @@
+{
+  "name": "بوابة زمار الذكية",
+  "description": "منصة خدمية وتجارية وطبية تفاعلية شاملة لناحية زمار تضم خرائط الكهرباء والماء الحية، الصيدليات الخافرة، العيادات، وسوق زمار الرقمي.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

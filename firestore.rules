@@ -1,0 +1,270 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidZone(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.powerStatus is string && data.powerStatus in ['NATIONAL', 'GENERATOR', 'OFF', 'FAULT'] &&
+             data.powerStartTime is string && data.powerStartTime.size() <= 60 &&
+             data.powerOffDuration is string && data.powerOffDuration.size() <= 60 &&
+             data.powerFaultReason is string && data.powerFaultReason.size() <= 200 &&
+             data.powerExpectedFix is string && data.powerExpectedFix.size() <= 100 &&
+             data.waterStatus is string && data.waterStatus in ['PUMPING', 'STOPPED', 'MAINTENANCE'] &&
+             data.waterOpenTime is string && data.waterOpenTime.size() <= 60 &&
+             data.waterDuration is string && data.waterDuration.size() <= 60 &&
+             data.waterFaultNote is string && data.waterFaultNote.size() <= 200 &&
+             data.waterExpectedReturn is string && data.waterExpectedReturn.size() <= 100 &&
+             data.coordsText is string && data.coordsText.size() >= 3 && data.coordsText.size() <= 2000 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidFacility(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.facilityType is string && data.facilityType in ['PHARMACY', 'CLINIC', 'LAB'] &&
+             data.specialty is string && data.specialty.size() >= 1 && data.specialty.size() <= 120 &&
+             data.address is string && data.address.size() >= 1 && data.address.size() <= 200 &&
+             data.workHours is string && data.workHours.size() >= 1 && data.workHours.size() <= 120 &&
+             data.isOnDuty is bool &&
+             data.approvalStatus is string && data.approvalStatus in ['APPROVED', 'PENDING'] &&
+             (data.mapX is float || data.mapX is int) && data.mapX >= 0.0 && data.mapX <= 1.0 &&
+             (data.mapY is float || data.mapY is int) && data.mapY >= 0.0 && data.mapY <= 1.0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidAppointment(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.facilityId is string && data.facilityId.size() >= 1 && data.facilityId.size() <= 128 &&
+             data.facilityName is string && data.facilityName.size() >= 1 && data.facilityName.size() <= 100 &&
+             data.doctorSpecialty is string && data.doctorSpecialty.size() >= 1 && data.doctorSpecialty.size() <= 120 &&
+             data.patientName is string && data.patientName.size() >= 1 && data.patientName.size() <= 100 &&
+             data.patientPhone is string && data.patientPhone.size() >= 1 && data.patientPhone.size() <= 40 &&
+             data.appointmentDate is string && data.appointmentDate.size() >= 1 && data.appointmentDate.size() <= 40 &&
+             data.serialNumber is int && data.serialNumber >= 1 && data.serialNumber <= 1000000 &&
+             data.status is string && data.status in ['CONFIRMED', 'COMPLETED', 'CANCELLED'] &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidStore(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 80 &&
+             data.description is string && data.description.size() >= 1 && data.description.size() <= 300 &&
+             data.address is string && data.address.size() >= 1 && data.address.size() <= 200 &&
+             data.approvalStatus is string && data.approvalStatus in ['APPROVED', 'PENDING'] &&
+             (data.mapX is float || data.mapX is int) && data.mapX >= 0.0 && data.mapX <= 1.0 &&
+             (data.mapY is float || data.mapY is int) && data.mapY >= 0.0 && data.mapY <= 1.0 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidProduct(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.storeId is string && data.storeId.size() >= 1 && data.storeId.size() <= 128 &&
+             data.storeName is string && data.storeName.size() >= 1 && data.storeName.size() <= 100 &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 80 &&
+             data.priceIqd is int && data.priceIqd >= 0 && data.priceIqd <= 1000000000 &&
+             data.description is string && data.description.size() >= 1 && data.description.size() <= 300 &&
+             data.inStock is bool &&
+             data.visualStyle is string && data.visualStyle.size() >= 1 && data.visualStyle.size() <= 60 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidMessage(data) {
+      return data.userId is string && data.userId == request.auth.uid && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.targetId is string && data.targetId.size() >= 1 && data.targetId.size() <= 128 &&
+             data.targetName is string && data.targetName.size() >= 1 && data.targetName.size() <= 100 &&
+             data.targetType is string && data.targetType in ['PHARMACY', 'CLINIC', 'LAB', 'STORE'] &&
+             data.senderRole is string && data.senderRole.size() >= 1 && data.senderRole.size() <= 60 &&
+             data.senderName is string && data.senderName.size() >= 1 && data.senderName.size() <= 100 &&
+             data.content is string && data.content.size() >= 1 && data.content.size() <= 500 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    match /zones/{zoneId} {
+      allow get: if isSignedIn() && isValidId(zoneId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(zoneId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'name', 'powerStatus', 'powerStartTime', 'powerOffDuration',
+                         'powerFaultReason', 'powerExpectedFix', 'waterStatus', 'waterOpenTime',
+                         'waterDuration', 'waterFaultNote', 'waterExpectedReturn', 'coordsText',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'name', 'powerStatus', 'powerStartTime', 'powerOffDuration',
+                         'powerFaultReason', 'powerExpectedFix', 'waterStatus', 'waterOpenTime',
+                         'waterDuration', 'waterFaultNote', 'waterExpectedReturn', 'coordsText',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidZone(incoming());
+      allow update: if isSignedIn() && isValidId(zoneId) &&
+                       isValidZone(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'name', 'powerStatus', 'powerStartTime', 'powerOffDuration',
+                         'powerFaultReason', 'powerExpectedFix', 'waterStatus', 'waterOpenTime',
+                         'waterDuration', 'waterFaultNote', 'waterExpectedReturn', 'coordsText',
+                         'updatedAt'
+                       ]);
+      allow delete: if isSignedIn() && isValidId(zoneId) && existing().userId == request.auth.uid;
+    }
+
+    match /facilities/{facilityId} {
+      allow get: if isSignedIn() && isValidId(facilityId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(facilityId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'name', 'facilityType', 'specialty', 'address',
+                         'workHours', 'isOnDuty', 'approvalStatus', 'mapX', 'mapY',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'name', 'facilityType', 'specialty', 'address',
+                         'workHours', 'isOnDuty', 'approvalStatus', 'mapX', 'mapY',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidFacility(incoming());
+      allow update: if isSignedIn() && isValidId(facilityId) &&
+                       isValidFacility(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'name', 'facilityType', 'specialty', 'address',
+                         'workHours', 'isOnDuty', 'approvalStatus', 'mapX', 'mapY', 'updatedAt'
+                       ]);
+      allow delete: if isSignedIn() && isValidId(facilityId) && existing().userId == request.auth.uid;
+    }
+
+    match /appointments/{appointmentId} {
+      allow get: if isSignedIn() && isValidId(appointmentId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(appointmentId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'facilityId', 'facilityName', 'doctorSpecialty',
+                         'patientName', 'patientPhone', 'appointmentDate', 'serialNumber',
+                         'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'facilityId', 'facilityName', 'doctorSpecialty',
+                         'patientName', 'patientPhone', 'appointmentDate', 'serialNumber',
+                         'status', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidAppointment(incoming());
+      allow update: if isSignedIn() && isValidId(appointmentId) &&
+                       isValidAppointment(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'status', 'appointmentDate', 'updatedAt'
+                       ]);
+      allow delete: if isSignedIn() && isValidId(appointmentId) && existing().userId == request.auth.uid;
+    }
+
+    match /stores/{storeId} {
+      allow get: if isSignedIn() && isValidId(storeId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(storeId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'name', 'category', 'description', 'address',
+                         'approvalStatus', 'mapX', 'mapY', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'name', 'category', 'description', 'address',
+                         'approvalStatus', 'mapX', 'mapY', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidStore(incoming());
+      allow update: if isSignedIn() && isValidId(storeId) &&
+                       isValidStore(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'name', 'category', 'description', 'address',
+                         'approvalStatus', 'mapX', 'mapY', 'updatedAt'
+                       ]);
+      allow delete: if isSignedIn() && isValidId(storeId) && existing().userId == request.auth.uid;
+    }
+
+    match /products/{productId} {
+      allow get: if isSignedIn() && isValidId(productId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(productId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'storeId', 'storeName', 'name', 'category',
+                         'priceIqd', 'description', 'inStock', 'visualStyle',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'storeId', 'storeName', 'name', 'category',
+                         'priceIqd', 'description', 'inStock', 'visualStyle',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidProduct(incoming());
+      allow update: if isSignedIn() && isValidId(productId) &&
+                       isValidProduct(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'name', 'category', 'priceIqd', 'description', 'inStock', 'visualStyle', 'updatedAt'
+                       ]);
+      allow delete: if isSignedIn() && isValidId(productId) && existing().userId == request.auth.uid;
+    }
+
+    match /messages/{messageId} {
+      allow get: if isSignedIn() && isValidId(messageId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && existing().userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(messageId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'targetId', 'targetName', 'targetType',
+                         'senderRole', 'senderName', 'content', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'targetId', 'targetName', 'targetType',
+                         'senderRole', 'senderName', 'content', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidMessage(incoming());
+      allow update: if isSignedIn() && isValidId(messageId) &&
+                       isValidMessage(incoming()) &&
+                       existing().userId == request.auth.uid &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'content', 'updatedAt'
+                       ]);
+      allow delete: if isSignedIn() && isValidId(messageId) && existing().userId == request.auth.uid;
+    }
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "entities": {
+    "ZoneDocument": {
+      "title": "ZoneDocument",
+      "description": "Geographic polygon zone in Zummar with electricity and water pumping states.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Authenticated user UID owning this record." },
+        "name": { "type": "string", "description": "Neighborhood or village name in Zummar." },
+        "powerStatus": { "type": "string", "enum": ["NATIONAL", "GENERATOR", "OFF", "FAULT"] },
+        "powerStartTime": { "type": "string", "description": "Start time of power supply." },
+        "powerOffDuration": { "type": "string", "description": "Duration of power outage." },
+        "powerFaultReason": { "type": "string", "description": "Reason for electrical fault or maintenance." },
+        "powerExpectedFix": { "type": "string", "description": "Expected repair completion time." },
+        "waterStatus": { "type": "string", "enum": ["PUMPING", "STOPPED", "MAINTENANCE"] },
+        "waterOpenTime": { "type": "string", "description": "Water pumping opening time." },
+        "waterDuration": { "type": "string", "description": "Water pumping duration." },
+        "waterFaultNote": { "type": "string", "description": "Pipe maintenance or fault note." },
+        "waterExpectedReturn": { "type": "string", "description": "Expected return of water pumping." },
+        "coordsText": { "type": "string", "description": "Normalized polygon coordinates separated by semicolons." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp on creation." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp on update." }
+      },
+      "required": [
+        "userId",
+        "name",
+        "powerStatus",
+        "powerStartTime",
+        "powerOffDuration",
+        "powerFaultReason",
+        "powerExpectedFix",
+        "waterStatus",
+        "waterOpenTime",
+        "waterDuration",
+        "waterFaultNote",
+        "waterExpectedReturn",
+        "coordsText",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "FacilityDocument": {
+      "title": "FacilityDocument",
+      "description": "Medical facility (Pharmacy, Clinic, or Lab) on the Zummar interactive map.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "facilityType": { "type": "string", "enum": ["PHARMACY", "CLINIC", "LAB"] },
+        "specialty": { "type": "string" },
+        "address": { "type": "string" },
+        "workHours": { "type": "string" },
+        "isOnDuty": { "type": "boolean" },
+        "approvalStatus": { "type": "string", "enum": ["APPROVED", "PENDING"] },
+        "mapX": { "type": "number" },
+        "mapY": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "name",
+        "facilityType",
+        "specialty",
+        "address",
+        "workHours",
+        "isOnDuty",
+        "approvalStatus",
+        "mapX",
+        "mapY",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AppointmentDocument": {
+      "title": "AppointmentDocument",
+      "description": "Electronic medical appointment booking in Zummar clinics.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "facilityId": { "type": "string" },
+        "facilityName": { "type": "string" },
+        "doctorSpecialty": { "type": "string" },
+        "patientName": { "type": "string" },
+        "patientPhone": { "type": "string" },
+        "appointmentDate": { "type": "string" },
+        "serialNumber": { "type": "integer" },
+        "status": { "type": "string", "enum": ["CONFIRMED", "COMPLETED", "CANCELLED"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "facilityId",
+        "facilityName",
+        "doctorSpecialty",
+        "patientName",
+        "patientPhone",
+        "appointmentDate",
+        "serialNumber",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StoreDocument": {
+      "title": "StoreDocument",
+      "description": "Commercial storefront on the Zummar map and digital market.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "address": { "type": "string" },
+        "approvalStatus": { "type": "string", "enum": ["APPROVED", "PENDING"] },
+        "mapX": { "type": "number" },
+        "mapY": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "name",
+        "category",
+        "description",
+        "address",
+        "approvalStatus",
+        "mapX",
+        "mapY",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "ProductDocument": {
+      "title": "ProductDocument",
+      "description": "Product item listed inside a Zummar store and general market.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "storeId": { "type": "string" },
+        "storeName": { "type": "string" },
+        "name": { "type": "string" },
+        "category": { "type": "string" },
+        "priceIqd": { "type": "integer" },
+        "description": { "type": "string" },
+        "inStock": { "type": "boolean" },
+        "visualStyle": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "storeId",
+        "storeName",
+        "name",
+        "category",
+        "priceIqd",
+        "description",
+        "inStock",
+        "visualStyle",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "MessageDocument": {
+      "title": "MessageDocument",
+      "description": "Direct online message between citizen and pharmacy, clinic, or merchant.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "targetId": { "type": "string" },
+        "targetName": { "type": "string" },
+        "targetType": { "type": "string", "enum": ["PHARMACY", "CLINIC", "LAB", "STORE"] },
+        "senderRole": { "type": "string" },
+        "senderName": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "userId",
+        "targetId",
+        "targetName",
+        "targetType",
+        "senderRole",
+        "senderName",
+        "content",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/zones/{zoneId}": {
+      "schema": { "$ref": "#/entities/ZoneDocument" },
+      "description": "Stores drawn neighborhood polygons and electricity/water states."
+    },
+    "/facilities/{facilityId}": {
+      "schema": { "$ref": "#/entities/FacilityDocument" },
+      "description": "Stores pharmacies, clinics, and labs in Zummar."
+    },
+    "/appointments/{appointmentId}": {
+      "schema": { "$ref": "#/entities/AppointmentDocument" },
+      "description": "Stores doctor appointment bookings."
+    },
+    "/stores/{storeId}": {
+      "schema": { "$ref": "#/entities/StoreDocument" },
+      "description": "Stores commercial shops on Zummar map."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/ProductDocument" },
+      "description": "Stores market products and inventory."
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/MessageDocument" },
+      "description": "Stores online direct messages with pharmacies and merchants."
+    }
+  }
+}
